@@ -7,7 +7,7 @@ Written by A.I.
 print("Minimize this console.")
 
 def globaltitle(): global title, version
-version = '2.0.0'
+version = '2.0.1'
 title = f'NordVPN - v{version}'
 
 globaltitle()
@@ -15,13 +15,13 @@ globaltitle()
 def msg(x): easygui.msgbox(x, title)
 
 def nordvpngui():
-    status = os.popen("nordvpn status").read()
+    status = os.popen("nordvpn status").read() 
     optionVar = easygui.buttonbox(f'{status}', title, ('Refresh', 'Connect (Fastest)', 'Connect (Select)', 'Disconnect', 'Settings'))
 
     if optionVar == None: exit()
     elif optionVar == "Refresh": nordvpngui()
     elif optionVar == "Connect (Fastest)":
-        coutput = str(os.popen("nordvpn c").read()).split()
+        coutput = str(os.popen("nordvpn connect").read()).split()
         loopcounter=0
         for i in coutput:
             if i == "You": coutput = coutput[loopcounter:]; break
@@ -30,7 +30,7 @@ def nordvpngui():
         nordvpngui()
 
     elif optionVar == "Disconnect":
-        doutput = str(os.popen("nordvpn d").read()).split()
+        doutput = str(os.popen("nordvpn disconnect").read()).split()
         loopcounter=0
         for i in doutput:
             if i == "You": doutput = doutput[loopcounter:]; break
@@ -43,15 +43,18 @@ def nordvpngui():
         nordvpngui()
 
     elif optionVar == "Connect (Select)":
-        cities = str(os.popen("nordvpn countries").read()).split()
-        cities.remove('-')
-        cities.sort()
-        countryVar = easygui.choicebox('Select a country:', title, (cities))
+        countries = str(os.popen("nordvpn countries").read()).split()
+        remove_these = {'-'}
+        countries = [ele for ele in countries if ele not in remove_these]
+        countries.sort()
+        countryVar = easygui.choicebox('Select a country:', title, (countries))
         if countryVar == None: nordvpngui()
         command = "nordvpn cities "+countryVar
 
         cities = str(os.popen(command).read()).split()
-        cities.remove('-'); cities.sort()
+        remove_these = {'-'}
+        cities = [ele for ele in cities if ele not in remove_these]        
+        cities.sort()
         cities.insert(0,'(Choose Fastest)')
         
         cityVar = easygui.choicebox(f'Select a city: ({countryVar})', title, (cities))
@@ -67,12 +70,14 @@ def nordvpngui():
             loopcounter+=1
         msg(str(' '.join([str(elem) for elem in coutput])))
         nordvpngui()
+
     elif optionVar == "Settings":
         settings = os.popen("nordvpn settings").read()
         settings = str(settings.replace(': ', ':'))
         settings = str(settings.replace('Kill Switch', 'Killswitch'))
         settings = str(settings.replace('Auto-connect', 'Autoconnect')).split()
-        settings.remove('-')
+        remove_these = {'-'}
+        settings = [ele for ele in settings if ele not in remove_these]
 
         for i in settings:
             if 'Technology:' in i: settings.remove(i)
@@ -88,14 +93,15 @@ def nordvpngui():
                     i = i.replace(':', ': ')
                     settings[loopcounter] = i
             loopcounter+=1
+
         settingVar = easygui.choicebox('Choose what setting to toggle:', title, (settings))
         if settingVar == None: nordvpngui()
-        loopcounter1=0
+        loopcounter=0
         for j in settingVar:
             if j == ":":
-                settingSelected = settingVar[:loopcounter1].lower()
+                settingSelected = settingVar[:loopcounter].lower()
                 break
-            loopcounter1+=1
+            loopcounter +=1
         
         if settingSelected == 'autoconnect': settingDesc = 'Enables or disables auto-connect. When enabled, this feature will automatically try to connect to VPN on operating system startup.'
         elif settingSelected == 'cybersec': settingDesc = 'Enables or disables CyberSec. When enabled, the CyberSec feature will automatically block suspicious websites so that no malware or other cyber threats can infect your device. Also removes flashy ads.'
@@ -117,4 +123,5 @@ def nordvpngui():
         if '\\' in soutput: soutput.remove('\\')
         msg(str(' '.join([str(elem) for elem in soutput])))
         nordvpngui()
+
 nordvpngui()
