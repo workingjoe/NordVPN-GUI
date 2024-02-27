@@ -12,7 +12,7 @@ print("Minimize this console.")
 
 
 def find_executable(file_path):
-    # Using shutil.which() to get the executable path
+    ''' Using shutil.which() to get the executable path '''
     exe_path = shutil.which(file_path)
  
     # Check if the executable path is not None and is executable
@@ -21,13 +21,9 @@ def find_executable(file_path):
     else:
         return None
  
-# split up string into executable followed by arguments
-# import shlex
-# command_line = "/bin/vikings -input eggs.txt -output \"spam spam.txt\" -cmd \"echo '$MONEY'\""
-# args = shlex.split(command_line)
-# print(args)
-# # ['/bin/vikings', '-input', 'eggs.txt', '-output', 'spam spam.txt', '-cmd', "echo '$MONEY'"]
+
 def create_cli_with_arg_list(exec_path, argument_string):
+    '''# split up string into executable followed by arguments'''
     command_line = exec_path + " " + argument_string
     if platform.system() == 'Windows':
         return shlex.split(command_line, comments=False, posix=False)
@@ -39,7 +35,8 @@ def globaltitle(): global title, version
 version = '2.0.1'
 title = f'NordVPN - v{version}'
 
-nameOfExecutable   = "ping" # "nordVPN"
+nameOfExecutable   = "nordvpn"
+
 path_to_Executable = str()   # likely "/usr/bin/nordVPN"
 
 
@@ -60,7 +57,8 @@ def nordvpngui():
             exit()
 
     # status = os.popen("nordvpn status").read() 
-    p_with_args = create_cli_with_arg_list(path_to_Executable, '-n 2 127.0.0.1')
+    p_with_args = create_cli_with_arg_list(path_to_Executable, 'status')
+
     with subprocess.Popen(p_with_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8') as proc:
         status = proc.stdout.read()
 
@@ -69,7 +67,12 @@ def nordvpngui():
     if optionVar == None: exit()
     elif optionVar == "Refresh": nordvpngui()
     elif optionVar == "Connect (Fastest)":
-        coutput = str(os.popen("nordvpn connect").read()).split()
+#        coutput = str(os.popen("nordvpn connect").read()).split()
+        p_with_args = create_cli_with_arg_list(path_to_Executable, 'connect')
+
+        with subprocess.Popen(p_with_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8') as proc:
+            coutput = str(proc.stdout.read()).split()
+
         loopcounter=0
         for i in coutput:
             if i == "You": coutput = coutput[loopcounter:]; break
