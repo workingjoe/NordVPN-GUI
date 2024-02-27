@@ -8,8 +8,11 @@ NordVPN GUI Interface (For Linux)
 
 Written by A.I.
 '''
-print("Minimize this console.")
 
+nameOfExecutable   = "nordvpn"
+path_to_Executable = str()   # likely "/usr/bin/nordVPN"
+
+def msg(x): easygui.msgbox(x, title)
 
 def find_executable(file_path):
     ''' Using shutil.which() to get the executable path '''
@@ -35,18 +38,13 @@ def globaltitle(): global title, version
 version = '2.0.1'
 title = f'NordVPN - v{version}'
 
-nameOfExecutable   = "nordvpn"
-
-path_to_Executable = str()   # likely "/usr/bin/nordVPN"
-
-
+print("Minimize this console.")
 globaltitle()
 
-def msg(x): easygui.msgbox(x, title)
 
 def nordvpngui():
     global path_to_Executable
-    # if we haven't setup path ... so first
+    # if we haven't setup path ... do so first
     if len(path_to_Executable) == 0:
         # See if command-line processing exe exists on path
         path_to_Executable = find_executable(nameOfExecutable)
@@ -125,10 +123,15 @@ def nordvpngui():
         cityVar = easygui.choicebox(f'Select a city: ({countryVar})', title, (cities))
         if cityVar == None: nordvpngui()
         if cityVar == '(Choose Fastest)':
-            command1 = "nordvpn connect "+countryVar
+            command1 = "connect "+countryVar
         else:
-            command1 = "nordvpn connect "+cityVar
-        coutput = str(os.popen(command1).read()).split()
+            command1 = "connect "+cityVar
+#        coutput = str(os.popen(command1).read()).split()
+        p_with_args = create_cli_with_arg_list(path_to_Executable, command1)
+
+        with subprocess.Popen(p_with_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8') as proc:
+            coutput = str(proc.stdout.read()).split()
+
         loopcounter=0
         for i in coutput:
             if i == "You": coutput = coutput[loopcounter:]; break
@@ -137,7 +140,12 @@ def nordvpngui():
         nordvpngui()
 
     elif optionVar == "Settings":
-        settings = os.popen("nordvpn settings").read()
+#        settings = os.popen("nordvpn settings").read()
+        p_with_args = create_cli_with_arg_list(path_to_Executable, 'settings')
+
+        with subprocess.Popen(p_with_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8') as proc:
+            settings = str(proc.stdout.read())
+
         settings = str(settings.replace(': ', ':'))
         settings = str(settings.replace('Kill Switch', 'Killswitch'))
         settings = str(settings.replace('Auto-connect', 'Autoconnect')).split()
