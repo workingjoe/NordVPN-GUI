@@ -81,7 +81,12 @@ def nordvpngui():
         nordvpngui()
 
     elif optionVar == "Disconnect":
-        doutput = str(os.popen("nordvpn disconnect").read()).split()
+#        doutput = str(os.popen("nordvpn disconnect").read()).split()
+        p_with_args = create_cli_with_arg_list(path_to_Executable, 'Disconnect')
+
+        with subprocess.Popen(p_with_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8') as proc:
+            doutput = str(proc.stdout.read()).split()
+
         loopcounter=0
         for i in doutput:
             if i == "You": doutput = doutput[loopcounter:]; break
@@ -94,15 +99,24 @@ def nordvpngui():
         nordvpngui()
 
     elif optionVar == "Connect (Select)":
-        countries = str(os.popen("nordvpn countries").read()).split()
+#        countries = str(os.popen("nordvpn countries").read()).split()
+        p_with_args = create_cli_with_arg_list(path_to_Executable, 'countries')
+
+        with subprocess.Popen(p_with_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8') as proc:
+            countries = str(proc.stdout.read()).split()        
+
         remove_these = {'-'}
         countries = [ele for ele in countries if ele not in remove_these]
         countries.sort()
         countryVar = easygui.choicebox('Select a country:', title, (countries))
         if countryVar == None: nordvpngui()
-        command = "nordvpn cities "+countryVar
+#        command = "nordvpn cities "+countryVar
+        p_with_args = create_cli_with_arg_list(path_to_Executable, 'cities '+countryVar)
 
-        cities = str(os.popen(command).read()).split()
+        with subprocess.Popen(p_with_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8') as proc:
+            cities = str(proc.stdout.read()).split()        
+        
+#        cities = str(os.popen(command).read()).split()
         remove_these = {'-'}
         cities = [ele for ele in cities if ele not in remove_these]        
         cities.sort()
