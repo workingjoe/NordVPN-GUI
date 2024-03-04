@@ -80,7 +80,7 @@ def nordvpngui():
 
     elif optionVar == "Disconnect":
 #        doutput = str(os.popen("nordvpn disconnect").read()).split()
-        p_with_args = create_cli_with_arg_list(path_to_Executable, 'Disconnect')
+        p_with_args = create_cli_with_arg_list(path_to_Executable, 'disconnect')
 
         with subprocess.Popen(p_with_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8') as proc:
             doutput = str(proc.stdout.read()).split()
